@@ -2,14 +2,14 @@ import Head from "next/head";
 import "../styles/globals.css";
 import { MantineProvider } from "@mantine/core";
 import { useEffect, useState } from "react";
-import Preloader from "../components/PreLoader";
+// import Preloader from "../components/PreLoader";
 
 function MyApp({ Component, pageProps }) {
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    setLoading(false)
-  })
+  // useEffect(() => {
+  //   setLoading(false)
+  // })
   return (
     <>
       <Head>
@@ -41,7 +41,7 @@ function MyApp({ Component, pageProps }) {
           },
         }}
       >
-        {!loading ?   <Component {...pageProps} /> : <Preloader />}
+       <Component {...pageProps} /> 
       
       </MantineProvider>
     </>
