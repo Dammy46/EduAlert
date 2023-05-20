@@ -107,7 +107,7 @@ export default function Signup() {
             <Link href="/signup/staff">
               <Paper className={classes.paper}>
                 <Box className={classes.paper__img_wrap}>
-                  <Image src="/assets/lecturer.svg" alt="" />
+                  <Image src="/lecturer.svg" alt="" />
                 </Box>
                 <Box className={classes.papper__info}>
                   <Text className={classes.title}>Sign up as a Staff</Text>
@@ -121,7 +121,7 @@ export default function Signup() {
             <Link href="/signup/student">
               <Paper shadow="lg" className={classes.paper2}>
                 <Box className={classes.paper__img_wrap}>
-                  <Image src="/assets/student.svg" alt="" />
+                  <Image src="/student.svg" alt="" />
                 </Box>
                 <Box className={classes.papper__info}>
                   <Text className={classes.title}>Sign up as a Student</Text>

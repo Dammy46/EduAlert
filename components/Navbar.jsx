@@ -186,7 +186,7 @@ export default function Navbar() {
       <Container className={classes.header}>
         <Box className={classes.img}>
           <Link href="/">
-            <Image src="/assets/brand.png" alt="edu-alert" width={130} />
+            <Image src="/brand.png" alt="edu-alert" width={130} />
           </Link>
         </Box>
         <Group spacing={5} className={classes.links}>
