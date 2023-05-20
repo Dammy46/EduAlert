@@ -195,7 +195,7 @@ const Student = () => {
                       required
                       withAsterisk
                       label="ID Num"
-                      type="number"
+                      type="text"
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
