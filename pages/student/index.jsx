@@ -10,70 +10,71 @@ import {
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/HomeNavbar";
 
-const useStyles = createStyles((theme) => ({
-  app__header: {
-    textAlign: "center",
-    fontSize: "3.75rem",
-    paddingTop: "4rem",
-    [theme.fn.smallerThan("md")]: {
-      fontSize: "2.75rem",
-      paddingTop: "2rem",
-    },
-    [theme.fn.smallerThan("xs")]: {
-      fontSize: "32px",
-      textAlign: "left",
-    },
-  },
-  app__header_text: {
-    textAlign: "center",
-    fontSize: "1.27rem",
-    marginTop: "1.5rem",
-    [theme.fn.smallerThan("xs")]: {
-      marginTop: "1.27rem",
-      fontSize: "20px",
-      textAlign: "left",
-    },
-  },
-  button__wrap: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: "2rem",
-    [theme.fn.smallerThan("xs")]: {
-      flexDirection: "column",
-      alignItems: "flex-start",
-      marginTop: "1.5rem",
-    },
-  },
-  custom__button2: {
-    background: "none",
-    transition: "all .3s",
-    border: "2px solid #1f7a1f",
-    color: "#1f7a1f",
+// const useStyles = createStyles((theme) => ({
+//   app__header: {
+//     textAlign: "center",
+//     fontSize: "3.75rem",
+//     paddingTop: "4rem",
+//     [theme.fn.smallerThan("md")]: {
+//       fontSize: "2.75rem",
+//       paddingTop: "2rem",
+//     },
+//     [theme.fn.smallerThan("xs")]: {
+//       fontSize: "32px",
+//       textAlign: "left",
+//     },
+//   },
+//   app__header_text: {
+//     textAlign: "center",
+//     fontSize: "1.27rem",
+//     marginTop: "1.5rem",
+//     [theme.fn.smallerThan("xs")]: {
+//       marginTop: "1.27rem",
+//       fontSize: "20px",
+//       textAlign: "left",
+//     },
+//   },
+//   button__wrap: {
+//     display: "flex",
+//     justifyContent: "center",
+//     alignItems: "center",
+//     marginTop: "2rem",
+//     [theme.fn.smallerThan("xs")]: {
+//       flexDirection: "column",
+//       alignItems: "flex-start",
+//       marginTop: "1.5rem",
+//     },
+//   },
+//   custom__button2: {
+//     background: "none",
+//     transition: "all .3s",
+//     border: "2px solid #1f7a1f",
+//     color: "#1f7a1f",
 
-    "&:hover": {
-      backgroundColor: "#1f7a1f",
-      color: "#fff",
-    },
-  },
-}));
+//     "&:hover": {
+//       backgroundColor: "#1f7a1f",
+//       color: "#fff",
+//     },
+//   },
+// }));
 
 export default function Home() {
-  const { classes } = useStyles();
+//   const { classes } = useStyles();
 
   return (
     <>
       <Head>
-        <title>EduAlert</title>
+        <title>EduAlert | Student</title>
       </Head>
       <Box>
         <header>
           <Navbar />
         </header>
-        <Container>
-          <Box
+           <Container>
+              <Text>Student Dashboard</Text>
+          {/* <Box
             sx={{
               height: "100%",
               "@media (max-width: 575px)": {
@@ -104,7 +105,7 @@ export default function Home() {
                 </Button>
               </Link>
             </Box>
-          </Box>
+          </Box> */}
         </Container>
       </Box>
     </>

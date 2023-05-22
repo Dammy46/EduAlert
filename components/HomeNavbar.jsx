@@ -17,8 +17,9 @@ import {
   Divider,
   Text,
 } from "@mantine/core";
+// import { Notification } from "tabler-icons-react";
 import { useDisclosure } from "@mantine/hooks";
-// import { IconChevronDown } from "@tabler/icons";
+// import { Notification } from "@tabler/icons";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
@@ -73,11 +74,7 @@ const useStyles = createStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
-  links: {
-    [theme.fn.smallerThan("sm")]: {
-      display: "none",
-    },
-  },
+
   hideLg: {
     [theme.fn.largerThan("sm")]: {
       display: "none",
@@ -153,33 +150,10 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export default function Navbar() {
+export default function HomeNavbar() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const { classes, cx } = useStyles();
 
-  let linksData = [
-    {
-      link: "staff",
-      label: "Staff",
-    },
-    {
-      link: "student",
-      label: "Student",
-    },
-  ];
-
-  const items = linksData.map((link) => (
-    <Link key={link.label} href={`/${link.link}`}>
-      <Text
-        className={cx(classes.link)}
-        onClick={() => {
-          close();
-        }}
-      >
-        {link.label}
-      </Text>
-    </Link>
-  ));
 
   return (
     <Header height={HEADER_HEIGHT} mb={45} className={classes.root}>
@@ -189,44 +163,67 @@ export default function Navbar() {
             <Image src="/brand.png" alt="edu-alert" width={130} />
           </Link>
         </Box>
-        <Group spacing={5} className={classes.links}>
-          {items}
-
-          <Link href="/signin">
-            <Button className={classes.custom__button} size="lg">
-              Login
-            </Button>
-          </Link>
+        <Group spacing={5}>
+ 
+          <Menu
+            trigger="click"
+            exitTransitionDuration={0}
+            className={classes.dropdown}
+            withArrow
+          >
+            <Menu.Target>
+              <Box>
+                <Center>
+                
+                    <Avatar
+                      src={
+                        "https://ui-avatars.com/api/?name=John+Doe&background=0A0A0A&color=fff&bold=true"
+                      }
+                      alt=""
+                      radius="xl"
+                    />
+                  
+                  {/* <IconChevronDown
+                    size={12}
+                    stroke={1.5}
+                    className={classes.Icon}
+                  /> */}
+                </Center>
+              </Box>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Text
+                align="center"
+                weight="600"
+                px="md"
+                size="md"
+                transform="capitalize"
+              >
+               John Doe
+              </Text>
+              <Text align="center" size="xs">
+              Doe@gmail.com
+              </Text>
+              <Divider mt="xs" />
+      
+                <Link href="/profile">
+                  <Menu.Item p={5}>Profile</Menu.Item>
+                </Link>
+            
+              <Link href="/settings">
+                <Menu.Item p={5}>Settings</Menu.Item>
+              </Link>
+              <Divider mt="xs" />
+              <Link href="">
+                <Text >
+                  <Menu.Item p={5}>Sign out</Menu.Item>
+                </Text>
+              </Link>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
 
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          className={classes.burger}
-          size="sm"
-        />
-
-        <Transition transition="pop-top-right" duration={200} mounted={opened}>
-          {(styles) => (
-            <Paper className={classes.navbar__menu} withBorder style={styles}>
-              <CloseButton
-                className={classes.burgerClose}
-                onClick={(e) => close()}
-                size="xl"
-                iconSize={20}
-              />
-              <div className={classes.navbar__menu_links}>
-                {items}
-
-                <Link href="/signin">
-                  <Button className={classes.custom__button} size="lg">
-                    Login
-                  </Button>
-                </Link>
-              </div>
-            </Paper>
-          )}
-        </Transition>
+      
       </Container>
     </Header>
   );

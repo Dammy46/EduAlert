@@ -274,7 +274,7 @@ const Student = () => {
                       mt="xl"
                       className={classes.controls}
                     >
-                      <Link size="sm" href="/">
+                      <Link size="sm" href="/signin">
                         <Text className={classes.control}>
                           Already have an account? Login
                         </Text>

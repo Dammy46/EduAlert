@@ -159,7 +159,7 @@ export default function ForgotPassword() {
                         mt="lg"
                         className={classes.controls}
                       >
-                        <Link size="sm" href="/">
+                        <Link size="sm" href="/signin">
                           <Text className={classes.control}>
                             <Center inline>
                             
