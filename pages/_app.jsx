@@ -2,7 +2,7 @@ import Head from "next/head";
 import "../styles/globals.css";
 import { MantineProvider } from "@mantine/core";
 import { useEffect, useState } from "react";
-import Preloader from "../components/PreLoader";
+import Preloader from "../components/Preloader";
 
 function MyApp({ Component, pageProps }) {
   const [loading, setLoading] = useState(true)
