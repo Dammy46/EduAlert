@@ -12,14 +12,17 @@ import {
   Grid,
   PasswordInput,
   TextInput,
+  Notification,
 } from "@mantine/core";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { useForm } from "@mantine/form";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import Head from "next/head";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import ClientService from "../../utils/ClientService";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme) => ({
   app: {
@@ -116,25 +119,27 @@ const PasswordRequirement = ({ meets, label }) => {
 const Student = () => {
   const { classes } = useStyles();
   const [popoverOpened, setPopoverOpened] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter  ()
   const form = useForm({
     initialValues: {
-      fullName: "",
-      matricNumber: "",
+      fullname: "",
+      user_id: "",
       email: "",
-      institute: "",
-      department: "",
-      level: "",
-      modeOfStudy: "",
+      phone: "",
       password: "",
-      confirmPassword: "",
+      cpassword: "",
     },
-    validate: {
-      fullName: (value) =>
-        /^[A-Za-z]+$/.test(value) ? null : "No special characters or number",
-
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords did not match" : null,
+    validationRules: {
+      fullname: (value) =>
+        /^[A-Za-z\s]+$/.test(value) || "Only letters and spaces are allowed",
+      user_id: (value) =>
+        /^[A-Za-z0-9]+$/.test(value) || "Only letters and numbers are allowed",
+      email: (value) => /^\S+@\S+$/.test(value) || "Invalid email format",
+      phone: (value) => /^\d{10}$/.test(value) || "Invalid phone number format",
+      cpassword: (value, values) =>
+        value === values.password || "Passwords do not match",
     },
   });
   const strength = getStrength(form.values.password);
@@ -146,7 +151,33 @@ const Student = () => {
       meets={requirement.re.test(form.values.password)}
     />
   ));
+  const handleFormSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https://edualert.skinx.skin/staff_register.php",
+        form.values
+      );
+      setIsSignedIn(true);
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    let notificationTimer;
 
+    if (isSignedIn) {
+      notificationTimer = setTimeout(() => {
+        setIsSignedIn(false);
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(notificationTimer);
+      router.push("/signin")
+    };
+  }, [isSignedIn]);
   return (
     <>
       <Head>
@@ -158,6 +189,11 @@ const Student = () => {
         </header>
 
         <Container>
+          {isSignedIn && (
+            <Notification color="teal" title="Registration Successful!">
+              Your Account is Under Review.
+            </Notification>
+          )}
           <Box className={classes.app}>
             <Text
               align="center"
@@ -175,7 +211,7 @@ const Student = () => {
               withBorder
               className={classes.app__signup}
             >
-              <form>
+              <form onSubmit={form.onSubmit(handleFormSubmit)}>
                 <Grid>
                   <Grid.Col span={12}>
                     <TextInput
@@ -185,6 +221,14 @@ const Student = () => {
                       required
                       withAsterisk
                       label="Full Name"
+                      value={form.values.fullname}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          "fullname",
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.fullname}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -195,7 +239,11 @@ const Student = () => {
                       required
                       withAsterisk
                       label="ID Num"
-                      type="text"
+                      value={form.values.user_id}
+                      onChange={(event) =>
+                        form.setFieldValue("user_id", event.currentTarget.value)
+                      }
+                      error={form.errors.user_id}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -207,6 +255,11 @@ const Student = () => {
                       withAsterisk
                       label="Email"
                       type="email"
+                      value={form.values.email}
+                      onChange={(event) =>
+                        form.setFieldValue("email", event.currentTarget.value)
+                      }
+                      error={form.errors.email}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -218,6 +271,11 @@ const Student = () => {
                       withAsterisk
                       label="Phone Number"
                       type="number"
+                      value={form.values.phone}
+                      onChange={(event) =>
+                        form.setFieldValue("phone", event.currentTarget.value)
+                      }
+                      error={form.errors.phone}
                     />
                   </Grid.Col>
 
@@ -236,7 +294,14 @@ const Student = () => {
                           <PasswordInput
                             withAsterisk
                             placeholder="Password"
-                            {...form.getInputProps("password")}
+                            value={form.values.password}
+                            onChange={(event) =>
+                              form.setFieldValue(
+                                "password",
+                                event.currentTarget.value
+                              )
+                            }
+                            error={form.errors.password}
                             size="lg"
                             label="Password"
                           />
@@ -263,7 +328,14 @@ const Student = () => {
                       withAsterisk
                       placeholder="Confirm Password"
                       size="lg"
-                      {...form.getInputProps("confirmPassword")}
+                      value={form.values.cpassword}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          "cpassword",
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.cpassword}
                       label="Confirm Password"
                     />
                   </Grid.Col>
@@ -279,7 +351,12 @@ const Student = () => {
                           Already have an account? Login
                         </Text>
                       </Link>
-                      <Button type="submit" className={classes.custom__button}>
+                      <Button
+                        type="submit"
+                        loading={isLoading}
+                        disabled={isLoading}
+                        className={classes.custom__button}
+                      >
                         Register
                       </Button>
                     </Group>

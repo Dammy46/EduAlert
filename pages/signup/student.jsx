@@ -13,14 +13,16 @@ import {
   PasswordInput,
   TextInput,
   Select,
+  Notification,
 } from "@mantine/core";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { useForm } from "@mantine/form";
-import { IconCheck, IconX } from "@tabler/icons-react";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { department, institute, level, modeOfStudy } from "@/utils/data";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const useStyles = createStyles((theme) => ({
   app: {
@@ -108,7 +110,7 @@ const PasswordRequirement = ({ meets, label }) => {
       mt={7}
       size="sm"
     >
-      {meets ? <IconCheck size={14} /> : <IconX size={14} />}{" "}
+      {meets ? "?" : "*"}
       <Box ml={10}>{label}</Box>
     </Text>
   );
@@ -117,25 +119,32 @@ const PasswordRequirement = ({ meets, label }) => {
 const Student = () => {
   const { classes } = useStyles();
   const [popoverOpened, setPopoverOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isError, setIsError] = useState(false)
+  const router = useRouter()
   const form = useForm({
     initialValues: {
-      fullName: "",
-      matricNumber: "",
-      email: "",
+      fullname: "",
+      user_id: "",
       institute: "",
       department: "",
       level: "",
-      modeOfStudy: "",
+      phone: "",
+      email: "",
+      mode: "",
       password: "",
-      confirmPassword: "",
+      cpassword: "",
     },
-    validate: {
+    validationRules: {
       fullName: (value) =>
-        /^[A-Za-z]+$/.test(value) ? null : "No special characters or number",
-
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords did not match" : null,
+        /^[A-Za-z\s]+$/.test(value) || "Only letters and spaces are allowed",
+      user_id: (value) =>
+        /^[A-Za-z0-9]+$/.test(value) || "Only letters and numbers are allowed",
+      email: (value) => /^\S+@\S+$/.test(value) || "Invalid email format",
+      phone: (value) => /^\d{10}$/.test(value) || "Invalid phone number format",
+      cpassword: (value, values) =>
+        value === values.password || "Passwords do not match",
     },
   });
   const strength = getStrength(form.values.password);
@@ -147,6 +156,40 @@ const Student = () => {
       meets={requirement.re.test(form.values.password)}
     />
   ));
+  const handleFormSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https://edualert.skinx.skin/student_register.php",
+        form.values
+      );
+      console.log(response.data);
+      setIsSignedIn(true);
+    } catch (error) {
+      console.error(error, "error");
+      setIsError(true)
+    }
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    let notificationTimer;
+
+    if (isSignedIn) {
+      notificationTimer = setTimeout(() => {
+        setIsSignedIn(false);
+      }, 3000);
+    }
+       if (isError) {
+         notificationTimer = setTimeout(() => {
+           setIsError(false);
+         }, 3000);
+       }
+
+    return () => {
+      clearTimeout(notificationTimer);
+      router.push("/signin");
+    };
+  }, [isSignedIn]);
 
   return (
     <>
@@ -159,6 +202,15 @@ const Student = () => {
         </header>
 
         <Container>
+          {isSignedIn && (
+            <Notification color="teal">Registration Successful!</Notification>
+          )}
+          {isError && (
+            <Notification color="red" title="Network Error!">
+              
+              Try again Later
+            </Notification>
+          )}
           <Box className={classes.app}>
             <Text
               align="center"
@@ -176,16 +228,24 @@ const Student = () => {
               withBorder
               className={classes.app__signup}
             >
-              <form>
+              <form onSubmit={form.onSubmit(handleFormSubmit)}>
                 <Grid>
                   <Grid.Col md={12} lg={6}>
                     <TextInput
-                      className={classes.app__input}
-                      placeholder="John Doe"
-                      size="lg"
-                      required
-                      withAsterisk
                       label="Full Name"
+                      required
+                      placeholder="john doe"
+                      withAsterisk
+                      className={classes.app__input}
+                      size="lg"
+                      value={form.values.fullname}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          "fullname",
+                          event.currentTarget.value
+                        )
+                      }
+                      error={form.errors.fullname}
                     />
                   </Grid.Col>
                   <Grid.Col md={12} lg={6}>
@@ -196,7 +256,11 @@ const Student = () => {
                       required
                       withAsterisk
                       label="Matric Num"
-                      type="number"
+                      value={form.values.user_id}
+                      onChange={(event) =>
+                        form.setFieldValue("user_id", event.currentTarget.value)
+                      }
+                      error={form.errors.user_id}
                     />
                   </Grid.Col>
                   <Grid.Col md={12} lg={6}>
@@ -208,6 +272,11 @@ const Student = () => {
                       withAsterisk
                       label="Email"
                       type="email"
+                      value={form.values.email}
+                      onChange={(event) =>
+                        form.setFieldValue("email", event.currentTarget.value)
+                      }
+                      error={form.errors.email}
                     />
                   </Grid.Col>
                   <Grid.Col md={12} lg={6}>
@@ -219,6 +288,11 @@ const Student = () => {
                       withAsterisk
                       label="Phone Number"
                       type="number"
+                      value={form.values.phone}
+                      onChange={(event) =>
+                        form.setFieldValue("phone", event.currentTarget.value)
+                      }
+                      error={form.errors.phone}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -240,6 +314,11 @@ const Student = () => {
                           },
                         },
                       })}
+                      value={form.values.institute}
+                      onChange={(value) =>
+                        form.setFieldValue("institute", value)
+                      }
+                      error={form.errors.institute}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -261,6 +340,11 @@ const Student = () => {
                           },
                         },
                       })}
+                      value={form.values.department}
+                      onChange={(value) =>
+                        form.setFieldValue("department", value)
+                      }
+                      error={form.errors.department}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -282,6 +366,9 @@ const Student = () => {
                           },
                         },
                       })}
+                      value={form.values.level}
+                      onChange={(value) => form.setFieldValue("level", value)}
+                      error={form.errors.level}
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
@@ -303,6 +390,8 @@ const Student = () => {
                           },
                         },
                       })}
+                      value={form.values.mode}
+                      onChange={(value) => form.setFieldValue("mode", value)}
                     />
                   </Grid.Col>
                   <Grid.Col md={12} lg={6}>
@@ -320,9 +409,15 @@ const Student = () => {
                           <PasswordInput
                             withAsterisk
                             placeholder="Password"
-                            {...form.getInputProps("password")}
                             size="lg"
                             label="Password"
+                            value={form.values.password}
+                            onChange={(event) =>
+                              form.setFieldValue(
+                                "password",
+                                event.currentTarget.value
+                              )
+                            }
                           />
                         </div>
                       </Popover.Target>
@@ -347,7 +442,13 @@ const Student = () => {
                       withAsterisk
                       placeholder="Confirm Password"
                       size="lg"
-                      {...form.getInputProps("confirmPassword")}
+                      value={form.values.cpassword}
+                      onChange={(event) =>
+                        form.setFieldValue(
+                          "cpassword",
+                          event.currentTarget.value
+                        )
+                      }
                       label="Confirm Password"
                     />
                   </Grid.Col>
@@ -363,7 +464,12 @@ const Student = () => {
                           Already have an account? Login
                         </Text>
                       </Link>
-                      <Button type="submit" className={classes.custom__button}>
+                      <Button
+                        type="submit"
+                        loading={isLoading}
+                        disabled={isLoading}
+                        className={classes.custom__button}
+                      >
                         Register
                       </Button>
                     </Group>

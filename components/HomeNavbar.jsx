@@ -51,7 +51,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   navbar__menu_links: {
-    alignItems: "center",
+    alignItems: "flex-end",
     display: "flex",
     flexDirection: "column",
     height: "100%",
@@ -109,7 +109,11 @@ const useStyles = createStyles((theme) => ({
     marginBottom: "1rem",
     color: "#0A0A0A",
   },
-
+  links: {
+    [theme.fn.smallerThan("sm")]: {
+      display: "none",
+    },
+  },
   link: {
     display: "block",
     lineHeight: 1,
@@ -121,10 +125,12 @@ const useStyles = createStyles((theme) => ({
     letterSpacing: "3px",
     [theme.fn.smallerThan("sm")]: {
       margin: "1rem 0",
-      fontSize: "1.25rem",
+      fontSize: "1rem",
     },
     "&:hover": {
       color: "#1f7a1f",
+      borderBottom: "2px solid #1f7a1f",
+      paddingBottom: "8px",
       textDecoration: "none",
     },
   },
@@ -154,6 +160,33 @@ export default function HomeNavbar() {
   const [opened, { toggle, close }] = useDisclosure(false);
   const { classes, cx } = useStyles();
 
+  let linksData = [
+    {
+      link: "student",
+      label: "Dashboard",
+    },
+    {
+      link: "settings/change-password",
+      label: "Change Password",
+    },
+    {
+      link: "settings/profile",
+      label: "Profile",
+    },
+  ];
+
+  const items = linksData.map((link) => (
+    <Link key={link.label} href={`/${link.link}`}>
+      <Text
+        className={cx(classes.link)}
+        onClick={() => {
+          close();
+        }}
+      >
+        {link.label}
+      </Text>
+    </Link>
+  ));
 
   return (
     <Header height={HEADER_HEIGHT} mb={45} className={classes.root}>
@@ -163,67 +196,39 @@ export default function HomeNavbar() {
             <Image src="/brand.png" alt="edu-alert" width={130} />
           </Link>
         </Box>
-        <Group spacing={5}>
- 
-          <Menu
-            trigger="click"
-            exitTransitionDuration={0}
-            className={classes.dropdown}
-            withArrow
-          >
-            <Menu.Target>
-              <Box>
-                <Center>
-                
-                    <Avatar
-                      src={
-                        "https://ui-avatars.com/api/?name=John+Doe&background=0A0A0A&color=fff&bold=true"
-                      }
-                      alt=""
-                      radius="xl"
-                    />
-                  
-                  {/* <IconChevronDown
-                    size={12}
-                    stroke={1.5}
-                    className={classes.Icon}
-                  /> */}
-                </Center>
-              </Box>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Text
-                align="center"
-                weight="600"
-                px="md"
-                size="md"
-                transform="capitalize"
-              >
-               John Doe
-              </Text>
-              <Text align="center" size="xs">
-              Doe@gmail.com
-              </Text>
-              <Divider mt="xs" />
-      
-                <Link href="/profile">
-                  <Menu.Item p={5}>Profile</Menu.Item>
-                </Link>
-            
-              <Link href="/settings">
-                <Menu.Item p={5}>Settings</Menu.Item>
-              </Link>
-              <Divider mt="xs" />
-              <Link href="">
-                <Text >
-                  <Menu.Item p={5}>Sign out</Menu.Item>
-                </Text>
-              </Link>
-            </Menu.Dropdown>
-          </Menu>
-        </Group>
+        <Group spacing={5} className={classes.links}>
+          {items}
 
-      
+          <Link href="/signin">
+            <Text className={cx(classes.link)}>Signout</Text>
+          </Link>
+        </Group>
+        <Burger
+          opened={opened}
+          onClick={toggle}
+          className={classes.burger}
+          size="sm"
+        />
+
+        <Transition transition="pop-top-right" duration={200} mounted={opened}>
+          {(styles) => (
+            <Paper className={classes.navbar__menu} withBorder style={styles}>
+              <CloseButton
+                className={classes.burgerClose}
+                onClick={(e) => close()}
+                size="xl"
+                iconSize={20}
+              />
+              <div className={classes.navbar__menu_links}>
+                {items}
+
+                <Link href="/signin">
+                  <Text className={cx(classes.link)}>Signout</Text>
+                </Link>
+              </div>
+            </Paper>
+          )}
+        </Transition>
       </Container>
     </Header>
   );

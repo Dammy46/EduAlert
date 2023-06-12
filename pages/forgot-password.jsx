@@ -1,5 +1,5 @@
-import Head from 'next/head';
-import { useForm } from '@mantine/form';
+import Head from "next/head";
+import { useForm } from "@mantine/form";
 
 import {
   createStyles,
@@ -13,11 +13,12 @@ import {
   TextInput,
   Center,
   Image,
-} from '@mantine/core';
-import Navbar from '../components/Navbar';
-import Link from 'next/link';
+} from "@mantine/core";
+import Navbar from "../components/Navbar";
+import Link from "next/link";
 
-import { useState } from 'react';
+import { useState } from "react";
+import axios from "axios";
 
 const useStyles = createStyles((theme) => ({
   app: {
@@ -102,15 +103,30 @@ const useStyles = createStyles((theme) => ({
 export default function ForgotPassword() {
   const { classes } = useStyles();
   const [display, setDisplay] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
-      email: '',
+      email: "",
     },
     validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
+      email: (val) => (/^\S+@\S+$/.test(val) ? null : "Invalid email"),
     },
   });
+  const handleFormSubmit = async () => {
+    setIsLoading(true);
 
+    try {
+      const response = await axios.post(
+        "https://edualert.skinx.skin/forgotpassword.php",
+        form.values
+      );
+      setDisplay(true)
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <>
@@ -139,12 +155,16 @@ export default function ForgotPassword() {
               >
                 <form
                   className={classes.form}
+                  onSubmit={form.onSubmit(handleFormSubmit)}
                 >
                   <Grid>
                     <Grid.Col span={12}>
                       <TextInput
                         placeholder="hello@eduAlert.com"
-                        {...form.getInputProps('email')}
+                        value={form.values.email}
+                        onChange={(event) =>
+                          form.setFieldValue("email", event.currentTarget.value)
+                        }
                         size="lg"
                         required
                         withAsterisk
@@ -162,7 +182,6 @@ export default function ForgotPassword() {
                         <Link size="sm" href="/signin">
                           <Text className={classes.control}>
                             <Center inline>
-                            
                               <Box ml={5}>Back to login page</Box>
                             </Center>
                           </Text>
@@ -171,7 +190,8 @@ export default function ForgotPassword() {
                         <Button
                           className={classes.custom__button}
                           type="submit"
-                         
+                          loading={isLoading}
+                          disabled={isLoading}
                         >
                           Reset password
                         </Button>
@@ -196,8 +216,8 @@ export default function ForgotPassword() {
                     m=".5rem 0"
                     size="30px"
                     sx={{
-                      '@media (max-width: 575px)': {
-                        fontSize: '28px',
+                      "@media (max-width: 575px)": {
+                        fontSize: "28px",
                       },
                     }}
                     align="center"
@@ -206,10 +226,10 @@ export default function ForgotPassword() {
                   </Text>
                 </Box>
                 <Text py="107pxpx" align="center">
-                  We sent you an email to {''}
-                  <span style={{ color: '#0CDC12' }}>
+                  We sent you an email to {""}
+                  <span style={{ color: "#0CDC12" }}>
                     {form.values.email}
-                  </span>{' '}
+                  </span>{" "}
                   on how to reset your password.
                 </Text>
                 <Box className={classes.img_wrapper}>
@@ -218,9 +238,9 @@ export default function ForgotPassword() {
                 <Text
                   onClick={() => setDisplay(false)}
                   sx={{
-                    color: '#0CDC12',
-                    '&:hover': {
-                      textDecoration: 'underline',
+                    color: "#0CDC12",
+                    "&:hover": {
+                      textDecoration: "underline",
                     },
                   }}
                 >

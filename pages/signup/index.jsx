@@ -111,10 +111,6 @@ export default function Signup() {
                 </Box>
                 <Box className={classes.papper__info}>
                   <Text className={classes.title}>Sign up as a Staff</Text>
-                  {/* <Text className={classes.desciption}>
-                    As a job seeker you will be able to search and apply for
-                    jobs.
-                  </Text> */}
                 </Box>
               </Paper>
             </Link>
@@ -125,9 +121,6 @@ export default function Signup() {
                 </Box>
                 <Box className={classes.papper__info}>
                   <Text className={classes.title}>Sign up as a Student</Text>
-                  {/* <Text className={classes.desciption}>
-                    As an employer you will be able to post your job openings.
-                  </Text> */}
                 </Box>
               </Paper>
             </Link>

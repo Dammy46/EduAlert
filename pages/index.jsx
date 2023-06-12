@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
+import HomeNavbar from "@/components/HomeNavbar";
 
 const useStyles = createStyles((theme) => ({
   app__header: {
@@ -62,6 +63,7 @@ const useStyles = createStyles((theme) => ({
 
 export default function Home() {
   const { classes } = useStyles();
+  const token = localStorage.getItem("token");
 
   return (
     <>
@@ -69,9 +71,7 @@ export default function Home() {
         <title>EduAlert</title>
       </Head>
       <Box>
-        <header>
-          <Navbar />
-        </header>
+        <header>{token ? <HomeNavbar /> : <Navbar />}</header>
         <Container>
           <Box
             sx={{
@@ -88,22 +88,24 @@ export default function Home() {
               EduAlert is a powerful platform designed to empower education by
               delivering instant notifications to students, and lecturer.
             </Text>
-            <Box className={classes.button__wrap}>
-              <Link href="/signin">
-                <Button
-                  size="lg"
-                  className={classes.custom__button2}
-                  sx={{
-                    "@media (max-width: 575px)": {
-                      width: "100%",
-                      marginTop: "20px",
-                    },
-                  }}
-                >
-                  Sign in to apply
-                </Button>
-              </Link>
-            </Box>
+            {!token && (
+              <Box className={classes.button__wrap}>
+                <Link href="/signin">
+                  <Button
+                    size="lg"
+                    className={classes.custom__button2}
+                    sx={{
+                      "@media (max-width: 575px)": {
+                        width: "100%",
+                        marginTop: "20px",
+                      },
+                    }}
+                  >
+                    Sign in to apply
+                  </Button>
+                </Link>
+              </Box>
+            )}
           </Box>
         </Container>
       </Box>

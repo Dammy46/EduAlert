@@ -13,14 +13,14 @@ import {
   createStyles,
   Box,
   Grid,
+  Select,
+  Textarea,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Head from "next/head";
-import axios from "axios";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { department } from "@/utils/data";
 
 const useStyles = createStyles((theme) => ({
   app: {
@@ -104,8 +104,6 @@ const useStyles = createStyles((theme) => ({
 
 const Login = () => {
   const { classes } = useStyles();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
       email: "",
@@ -115,27 +113,6 @@ const Login = () => {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
   });
-  const handleFormSubmit = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.post(
-        "https://edualert.skinx.skin/login.php",
-        form.values
-      );
-      console.log(response);
-      const { token } = response.data[0];
-      const { fullname } = response.data[0].results;
-      localStorage.setItem("token", token);
-      if (fullname === "Admin") {
-        router.push("/admin");
-      } else {
-        router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setIsLoading(false);
-  };
   return (
     <>
       <Head>
@@ -148,15 +125,6 @@ const Login = () => {
         </header>
         <Container>
           <Box className={classes.app}>
-            <Text align="center" component="h2" className={classes.intro}>
-              Welcome back!
-            </Text>
-            <Text size="sm" align="center" mt={5}>
-              Do not have an account yet?{" "}
-              <Link href="/signup" className={classes.link}>
-                Create an account
-              </Link>
-            </Text>
             <Paper
               shadow="md"
               className={classes.app__individual}
@@ -164,48 +132,44 @@ const Login = () => {
               p="xl"
               withBorder
             >
-              <form
-                className={classes.form}
-                onSubmit={form.onSubmit(handleFormSubmit)}
-              >
+              <form className={classes.form}>
                 <Grid>
                   <Grid.Col span={12}>
-                    <TextInput
-                      placeholder="hello@eduAlert.com"
+                    <Select
                       className={classes.app__input}
+                      label="Department"
+                      placeholder="Pick one"
                       size="lg"
-                      required
-                      withAsterisk
-                      label="Email"
-                      value={form.values.email}
-                      onChange={(event) =>
-                        form.setFieldValue("email", event.currentTarget.value)
-                      }
+                      data={department}
+                      searchable
+                      styles={() => ({
+                        item: {
+                          "&[data-selected]": {
+                            "&, &:hover": {
+                              backgroundColor: "#1f7a1f",
+                            },
+                          },
+                        },
+                      })}
                     />
                   </Grid.Col>
 
                   <Grid.Col span={12}>
-                    <PasswordInput
-                      withAsterisk
-                      placeholder="Password"
+                    <TextInput
+                      className={classes.app__input}
+                      placeholder="Use of English"
                       size="lg"
-                      required
-                      label="Password"
-                      value={form.values.password}
-                      onChange={(event) =>
-                        form.setFieldValue(
-                          "password",
-                          event.currentTarget.value
-                        )
-                      }
+                      label="Course"
+                      type="text"
                     />
                   </Grid.Col>
                   <Grid.Col span={12}>
-                    <Group position="right" mt="md">
-                      <Link href="/forgot-password" className={classes.reset}>
-                        Forgot password?
-                      </Link>
-                    </Group>
+                    <Textarea
+                      placeholder="Compose Message"
+                      label="Compose Message"
+                      minRows={8}
+                      size="lg"
+                    />
                   </Grid.Col>
 
                   <Grid.Col span={12}>
@@ -213,10 +177,9 @@ const Login = () => {
                       radius="md"
                       className={classes.custom__button}
                       type="submit"
-                      loading={isLoading}
-                      disabled={isLoading}
+                      size="lg"
                     >
-                      Sign In
+                      Upload Message
                     </Button>
                   </Grid.Col>
                 </Grid>
